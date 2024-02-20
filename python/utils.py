@@ -1,5 +1,7 @@
 import numpy as np
 
+from mnist_data_loader import MnistDataloader
+
 
 def one_hot_encoder(input_array, n_classes: int):
     """ Encodes input array in one hot encoding.
@@ -35,3 +37,41 @@ def prepare_mnist_data(x, y):
     y = one_hot_encoder(y, 10)
     y = np.array(y)
     return x, y
+
+
+def get_mnist_data(n_training_samples: int, n_test_samples: int):
+    """ Returns prepared MNIST dataset.
+        Args:
+           n_training_samples: number of samples from training dataset
+           n_test_samples: number of samples from test dataset
+        Returns:
+             (x_train, y_train), (x_test, y_test)
+             x_train, y_train -> numpy arrays of training dataset
+             x_test, y_test -> numpy arrays of test dataset
+    """
+
+    mnist_base_path = 'C:\\Users\\Public\\Projects\\MachineLearning\\Datasets\\archive\\'
+    mnist_loader = MnistDataloader(
+        training_images_filepath=mnist_base_path + 'train-images.idx3-ubyte',
+        training_labels_filepath=mnist_base_path + 'train-labels.idx1-ubyte',
+        test_images_filepath=mnist_base_path + 't10k-images.idx3-ubyte',
+        test_labels_filepath=mnist_base_path + 't10k-labels.idx1-ubyte',
+    )
+
+    (x_train, y_train), (x_test, y_test) = mnist_loader.load_data()
+
+    # training data
+    x_train = x_train[0:n_training_samples]
+    y_train = y_train[0:n_training_samples]
+
+    x_train = np.array(x_train)
+    x_train, y_train = prepare_mnist_data(x_train, y_train)
+
+    # validation data
+    x_test = x_test[0:n_test_samples]
+    y_test = y_test[0:n_test_samples]
+
+    x_test = np.array(x_test)
+    x_test, y_test = prepare_mnist_data(x_test, y_test)
+
+    return (x_train, y_train), (x_test, y_test)

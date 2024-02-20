@@ -3,8 +3,7 @@ import tensorflow as tf
 import larq
 import json
 
-from mnist_data_loader import MnistDataloader
-from utils import one_hot_encoder, prepare_mnist_data
+from utils import get_mnist_data
 
 
 class BnnMnistModel(tf.keras.Model):
@@ -49,34 +48,8 @@ class BnnMnistModel(tf.keras.Model):
         return self.dense_last(x)
 
 
-mnist_base_path = 'C:\\Users\\Public\\Projects\\MachineLearning\\Datasets\\archive\\'
-mnist_loader = MnistDataloader(
-    training_images_filepath=mnist_base_path + 'train-images.idx3-ubyte',
-    training_labels_filepath=mnist_base_path + 'train-labels.idx1-ubyte',
-    test_images_filepath=mnist_base_path + 't10k-images.idx3-ubyte',
-    test_labels_filepath=mnist_base_path + 't10k-labels.idx1-ubyte',
-)
-
-(x_train, y_train), (x_test, y_test) = mnist_loader.load_data()
+(x_train, y_train), (x_test, y_test) = get_mnist_data(n_training_samples=30_000, n_test_samples=10_000)
 print('Dataset loaded!')
-
-
-# training data
-N = 30_000
-x_train = x_train[0:N]
-y_train = y_train[0:N]
-
-x_train = np.array(x_train)
-x_train, y_train = prepare_mnist_data(x_train, y_train)
-
-# validation data
-N = 10_000
-x_test = x_test[0:N]
-y_test = y_test[0:N]
-
-x_test = np.array(x_test)
-x_test, y_test = prepare_mnist_data(x_test, y_test)
-
 
 model = BnnMnistModel()
 
@@ -85,69 +58,73 @@ model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
               metrics=[tf.keras.metrics.CategoricalAccuracy()])
 print('Model compiled!')
 
-
+file_name = 'bnn_mnist_model_test'
 from_file = True  # choose if load model weights from file or fit model otherwise
 
 
 if from_file:
+    # loading model from .h5 file
     print(model.predict(x_test[0]))
     print(y_test[0])
-    model.load_weights('bnn_mnist_model.h5')
+    model.load_weights(f'models\\{file_name}.h5')
 else:
+    # model fitting
     model.fit(x_train, y_train, epochs=35, verbose='2')
     print('Model trained!')
 
 
+# model validation
 metrics = model.evaluate(x_test, y_test)
 print(metrics)
 
 
+# sample prediction for visualisation
 print(model.predict(x_test[0]))
 print(y_test[0])
 
 
 if not from_file:
-    model.save_weights('models\\bnn_mnist_model.h5')  # save full precision latent weights
+    model.save_weights(f'models\\{file_name}.h5')  # save full precision latent weights
 
+    # preparing data for json file
+    model_dict = []
+    with larq.context.quantized_scope(True):
+        # model.save_weights('bnn_mnist_model_binary.h5')  # save binary weights
 
-model_dict = []
-with larq.context.quantized_scope(True):
-    # model.save_weights('bnn_mnist_model_binary.h5')  # save binary weights
+        model_dict.append(dict(
+            type='dense',
+            weights=model.dense_1.get_weights()[0].tolist()
+        ))
 
-    model_dict.append(dict(
-        type='dense',
-        weights=model.dense_1.get_weights()[0].tolist()
-    ))
+        batch_normalisation_weights_array = model.batch_normalization_1.get_weights()
+        batch_normalization_weights = []
+        for i in range(4):
+            batch_normalization_weights.append(batch_normalisation_weights_array[i].tolist())
+        model_dict.append(dict(
+            type='batch_normalization',
+            weights=batch_normalization_weights
+        ))
 
-    batch_normalisation_weights_array = model.batch_normalization_1.get_weights()
-    batch_normalization_weights = []
-    for i in range(4):
-        batch_normalization_weights.append(batch_normalisation_weights_array[i].tolist())
-    model_dict.append(dict(
-        type='batch_normalization',
-        weights=batch_normalization_weights
-    ))
+        model_dict.append(dict(
+            type='dense',
+            weights=model.dense_2.get_weights()[0].tolist()
+        ))
 
-    model_dict.append(dict(
-        type='dense',
-        weights=model.dense_2.get_weights()[0].tolist()
-    ))
+        batch_normalisation_weights_array = model.batch_normalization_2.get_weights()
+        batch_normalization_weights = []
+        for i in range(4):
+            batch_normalization_weights.append(batch_normalisation_weights_array[i].tolist())
+        model_dict.append(dict(
+            type='batch_normalization',
+            weights=batch_normalization_weights
+        ))
 
-    batch_normalisation_weights_array = model.batch_normalization_2.get_weights()
-    batch_normalization_weights = []
-    for i in range(4):
-        batch_normalization_weights.append(batch_normalisation_weights_array[i].tolist())
-    model_dict.append(dict(
-        type='batch_normalization',
-        weights=batch_normalization_weights
-    ))
+        model_dict.append(dict(
+            type='dense',
+            weights=model.dense_last.get_weights()[0].tolist()
+        ))
 
-    model_dict.append(dict(
-        type='dense',
-        weights=model.dense_last.get_weights()[0].tolist()
-    ))
-
-
-json_model = json.dumps(model_dict)
-with open('models\\bnn_mnist_model.json', 'w') as f:
-    f.write(json_model)
+    # saving model data in json file
+    json_model = json.dumps(model_dict)
+    with open(f'models\\{file_name}.json', 'w') as f:
+        f.write(json_model)

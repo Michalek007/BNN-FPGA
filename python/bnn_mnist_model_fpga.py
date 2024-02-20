@@ -1,8 +1,7 @@
 import numpy as np
 import json
 
-from mnist_data_loader import MnistDataloader
-from utils import prepare_mnist_data
+from utils import get_mnist_data
 
 np.random.seed(0)
 
@@ -202,31 +201,6 @@ class NeuralNetwork:
 
 network = NeuralNetwork(from_file='models\\bnn_mnist_model.json')
 
-mnist_base_path = 'C:\\Users\\Public\\Projects\\MachineLearning\\Datasets\\archive\\'
-mnist_loader = MnistDataloader(
-    training_images_filepath=mnist_base_path + 'train-images.idx3-ubyte',
-    training_labels_filepath=mnist_base_path + 'train-labels.idx1-ubyte',
-    test_images_filepath=mnist_base_path + 't10k-images.idx3-ubyte',
-    test_labels_filepath=mnist_base_path + 't10k-labels.idx1-ubyte',
-)
-
-(x_train, y_train), (x_test, y_test) = mnist_loader.load_data()
-
-# training data
-N = 30_000
-x_train = x_train[0:N]
-y_train = y_train[0:N]
-
-x_train = np.array(x_train)
-x_train, y_train = prepare_mnist_data(x_train, y_train)
-
-# validation data
-N = 10_000
-x_test = x_test[0:N]
-y_test = y_test[0:N]
-
-x_test = np.array(x_test)
-x_test, y_test = prepare_mnist_data(x_test, y_test)
-
+(x_train, y_train), (x_test, y_test) = get_mnist_data(n_training_samples=30_000, n_test_samples=10_000)
 
 accuracy = network.validate(x_test, y_test)

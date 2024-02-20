@@ -7,13 +7,6 @@
 --
 -------------------------------------------------------------------------------
 --
--- File        : C:\My_Designs\MN\neural_network\uart\src\uart_rx.vhd
--- Generated   : Wed Jan 17 13:24:20 2024
--- From        : interface description file
--- By          : Itf2Vhdl ver. 1.22
---
--------------------------------------------------------------------------------
---
 -- Description : UART receiver 
 --
 -------------------------------------------------------------------------------
@@ -24,6 +17,7 @@
 
 library IEEE;
 use IEEE.std_logic_1164.all;
+use work.layer_constants.all;
 
 entity uart_rx is
 	 port(
@@ -39,7 +33,7 @@ end uart_rx;
 
 architecture uart_rx of uart_rx is
 
-constant CLOCK: INTEGER := 100_000; -- mnist simulation: 100_000; implementation: --100_000_000;
+constant CLOCK: INTEGER := SYS_CLOCK_FREQ;
 
 type receive_type is ( IDLE, START, WAIT_OAH, GET_BIT, WAIT_ONE, STOP);
 signal receive_mode: receive_type;

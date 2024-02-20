@@ -7,13 +7,6 @@
 --
 -------------------------------------------------------------------------------
 --
--- File        : C:\My_Designs\MN\neural_network\uart\src\uart_tx.vhd
--- Generated   : Wed Jan 10 13:45:06 2024
--- From        : interface description file
--- By          : Itf2Vhdl ver. 1.22
---
--------------------------------------------------------------------------------
---
 -- Description : UART transmitter 
 --
 -------------------------------------------------------------------------------
@@ -24,6 +17,7 @@
 
 library IEEE;
 use IEEE.std_logic_1164.all;
+use work.layer_constants.all;
 
 entity uart_tx is
 	 port(
@@ -40,7 +34,7 @@ end uart_tx;
 
 architecture uart_tx of uart_tx is
 
-	constant CLOCK: INTEGER := 100_000; -- simulation: 100_000; implementation: --100_000_000;
+	constant CLOCK: INTEGER := SYS_CLOCK_FREQ;
 	
 	type transmit_type is (IDLE, START_BIT, SEND, WAIT_ONE_CLK);
 	signal transmit_mode : transmit_type := IDLE;

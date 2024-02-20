@@ -1,20 +1,13 @@
 -------------------------------------------------------------------------------
 --
 -- Title       : pop_cnt
--- Design      : uart
--- Author      : Michal
+-- Design      : neural_network
+-- Author      : Micha³ Nizio³
 -- Company     : AGH
 --
 -------------------------------------------------------------------------------
 --
--- File        : C:\Users\Public\Projects\MyDesigns\uart\src\pop_cnt.vhd
--- Generated   : Wed Feb  7 04:16:15 2024
--- From        : interface description file
--- By          : Itf2Vhdl ver. 1.22
---
--------------------------------------------------------------------------------
---
--- Description : 
+-- Description : Population count 
 --
 -------------------------------------------------------------------------------
 

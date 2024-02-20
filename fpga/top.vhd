@@ -1,20 +1,13 @@
 -------------------------------------------------------------------------------
 --
 -- Title       : top
--- Design      : uart
--- Author      : Michal
+-- Design      : neural_network
+-- Author      : Micha³ Nizio³
 -- Company     : AGH
 --
 -------------------------------------------------------------------------------
 --
--- File        : C:\Users\Public\Projects\MyDesigns\uart\src\top.vhd
--- Generated   : Wed Feb  7 00:44:37 2024
--- From        : interface description file
--- By          : Itf2Vhdl ver. 1.22
---
--------------------------------------------------------------------------------
---
--- Description : 
+-- Description : BNN implementation
 --
 -------------------------------------------------------------------------------
 
@@ -166,7 +159,6 @@ port map(
 	  if COUNTER = LAYER_INPUT_N_INPUTS + 1 then
 		 BUFFER_FULL <= '1';
 
-		 --OUTPUT_UART_DATA <= INPUT_BUFFER(1);
 		 DATA_ACTIVE <= '1';
 		 
 		 COUNTER <= (others => '0');
@@ -182,7 +174,7 @@ port map(
 	  
   end process;
   
-  OUTPUT_UART_DATA <= INPUT_BUFFER(1); -- INPUT_BUFFER(1)
+  OUTPUT_UART_DATA <= LAYER_O_OUTPUT;
   OUTPUT <= LAYER_O_OUTPUT; 
   
 end top;

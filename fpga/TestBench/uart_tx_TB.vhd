@@ -51,11 +51,11 @@ begin  -- of stimulus process
 --wait for <time to next event>; -- <current time>
 
 	RESET <= '0';
-    wait for 10 ns; --75 ns
+    wait for 10 ns; --10 ns
 	RESET <= '1';
-    wait for 10 ns; --150 ns
+    wait for 10 ns; --20 ns
 	RESET <= '0';
-	wait for 1500 us;
+	wait for 1500 us; -- 1500 us
 	END_SIM <= TRUE;
 --	end of stimulus events
 	wait;
@@ -66,9 +66,10 @@ begin  -- of DATA_ACTIVE process
 --wait for <time to next event>; -- <current time>
 
 	DATA_ACTIVE <= '0';
-    wait for 10 ns; --100 ns
+    wait for 10 ns;
 	DATA_ACTIVE <= '1';
---	end of load_stimulus events
+
+--	end of DATA_ACTIVE events
 	wait;
 end process; -- end of DATA_ACTIVE process
 
@@ -79,13 +80,13 @@ begin  -- of UART_DATA process
 	UART_DATA <= "01010101";
 	wait for 750 us;
 	UART_DATA <= "01010101";
+
 --	end of UART_DATA events
 	wait;
 end process; -- end of UART_DATA process
 
 CLOCK_CLK : process
 begin
-	--this process was generated based on formula: 0 0 ns, 1 50 ns -r 100 ns
 	--wait for <time to next event>; -- <current time>
 	if END_SIM = FALSE then
 		CLK <= '0';

@@ -49,9 +49,9 @@ begin  -- of stimulus process
 --wait for <time to next event>; -- <current time>
 
 	RESET <= '1';
-    wait for 50 ns; -- 50 ns
+    wait for 50 ns;
 	RESET <= '0'; 
-    wait for 1000 us; -- 3050 ns
+    wait for 1000 us;
 	END_SIM <= TRUE;
 --	end of stimulus events
 	wait;
@@ -88,7 +88,6 @@ end process; -- end of UART_RX_STIMULUS process
 
 CLOCK_CLK : process
 begin
-	--this process was generated based on formula: 0 0 ns, 1 50 ns -r 100 ns
 	--wait for <time to next event>; -- <current time>
 	if END_SIM = FALSE then
 		CLK <= '0';

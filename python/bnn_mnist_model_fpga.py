@@ -199,8 +199,9 @@ class NeuralNetwork:
                 ))
 
 
-network = NeuralNetwork(from_file='models\\bnn_mnist_model.json')
+if __name__ == '__main__':
+    network = NeuralNetwork(from_file='models\\bnn_mnist_model.json')
 
-(x_train, y_train), (x_test, y_test) = get_mnist_data(n_training_samples=30_000, n_test_samples=10_000)
+    (x_train, y_train), (x_test, y_test) = get_mnist_data(n_training_samples=30_000, n_test_samples=10_000)
 
-accuracy = network.validate(x_test, y_test)
+    accuracy = network.validate(x_test, y_test)

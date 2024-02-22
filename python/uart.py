@@ -3,7 +3,7 @@ import serial
 import matplotlib.pyplot as plt
 import numpy as np
 
-from utils import prepare_mnist_data
+from utils import prepare_mnist_data, get_mnist_data
 
 
 def uart_init():
@@ -41,7 +41,6 @@ def uart_send_digit_image(file_name: str):
 
     for value in x[0][0]:
         value = int(value)
-        print(value)
         uart.write(value.to_bytes(1, byteorder='big'))
 
     time.sleep(0.1)
@@ -52,5 +51,33 @@ def uart_send_digit_image(file_name: str):
     return output, y
 
 
+def uart_mnist_validate():
+    """ Validates implemented BNN mnist model on FPGA via UART.
+
+        Returns:
+            calculated accuracy based on equation: correct predictions / samples
+    """
+    uart = uart_init()
+
+    (x_train, y_train), (x_test, y_test) = get_mnist_data(n_training_samples=1000, n_test_samples=10_000)
+
+    samples = len(x_test)
+    correct = 0
+    for i in range(samples):
+        for value in x_test[i][0]:
+            value = int(value)
+            uart.write(value.to_bytes(1, byteorder='big'))
+        time.sleep(0.1)
+        predicted_class = int.from_bytes(uart.read_all(), byteorder='big', signed=False)
+        true_class = np.argmax(y_test[i])
+        if predicted_class == true_class:
+            correct += 1
+
+    accuracy = correct / samples
+    return accuracy
+
+
 if __name__ == '__main__':
     uart_send_digit_image('digit_images_samples\\0.jpg')
+
+    # uart_mnist_validate()
